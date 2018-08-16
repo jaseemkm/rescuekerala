@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% block content %}
+  <form method="post"  class="simple-form">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  {% buttons %}
+  <button type="submit" class="btn btn-primary">
+  {% bootstrap_icon "star" %} Submit
+  </button>
+  {% endbuttons %}
+  </form> 
+
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager ,vol_categories
+from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager ,vol_categories, RescueCamp, Person
 import csv
 from django.http import HttpResponse
 
@@ -75,9 +75,18 @@ class ContributorAdmin(admin.ModelAdmin):
         response['Content-Disposition'] = 'attachment; filename=Contributors.csv'
         return response
 
+class PersonInline(admin.TabularInline):
+    model = Person
+
+class RescueCampAdmin(admin.ModelAdmin):
+    inlines = [
+        PersonInline,
+    ]
+
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
 admin.site.register(Contributor, ContributorAdmin)
 admin.site.register(DistrictNeed)
 admin.site.register(DistrictCollection)
 admin.site.register(DistrictManager)
+admin.site.register(RescueCamp,RescueCampAdmin)

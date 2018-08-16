@@ -2,11 +2,14 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
-from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed
+from .models import Request, Volunteer, DistrictManager, Contributor, DistrictNeed, Person, RescueCamp
 import django_filters
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
+from django import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 
 class CreateRequest(CreateView):
     model = Request
@@ -145,3 +148,36 @@ def dmoinfo(request):
     conserve = Contributor.objects.all().filter(status = "ful" , district = dist).count()
     contotal = Contributor.objects.all().filter(district = dist).count()
     return render(request ,"dmoinfo.html",{"reqserve" : reqserve , "reqtotal" : reqtotal , "volcount" : volcount , "conserve" : conserve , "contotal" : contotal })
+
+class PersonForm(forms.ModelForm):
+    class Meta:
+       model = Person
+       fields = [
+        'name',
+        'age',
+        'gender',
+        'address',
+        'district',
+        'phone',
+        'notes',
+        'camped_at'
+        ]
+
+    def __init__(self, *args, **kwargs):
+       user = kwargs.pop('user')
+       super(PersonForm, self).__init__(*args, **kwargs)
+       self.fields['camped_at'].queryset = RescueCamp.objects.filter(data_entry_user=user)
+       self.fields['camped_at'].initial = RescueCamp.objects.filter(data_entry_user=user).first()
+
+class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
+    login_url = '/login/'
+    model = Person
+    template_name='mainapp/add_person.html'  
+    form_class = PersonForm
+    success_url = '/add_person/'
+    success_message = "Created successfully"
+
+    def get_form_kwargs(self):
+        kwargs = super(AddPerson, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs

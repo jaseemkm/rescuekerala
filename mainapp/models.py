@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 districts = (
     ('tvm','Thiruvananthapuram'),
@@ -42,6 +43,12 @@ vol_categories = (
     ('bot', 'Boat Service'),
     ('rck', 'Rock Climbing'),
     ('oth', 'Other')
+)
+
+gender =(
+    (0,'Male'),
+    (1,'Female'),
+    (2,'Others')
 )
 
 class Request(models.Model):
@@ -174,3 +181,39 @@ class DistrictCollection(models.Model):
     collection = models.TextField(
         verbose_name="Details of collected items"
     )
+
+class RescueCamp(models.Model):
+    name = models.CharField(max_length=50,verbose_name="Name - Eg: CUSAT University SOE")
+    location = models.TextField(verbose_name="Location - Eg: Kalamassery")
+    district = models.CharField(
+        max_length=15,
+        choices=districts
+    )
+    contacts = models.TextField(verbose_name="List of contact numbers")
+    data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True)
+    def __str__(self):
+        return self.name
+
+class Person(models.Model):
+    name = models.CharField(max_length=30,blank=False,null=False)
+    age = models.IntegerField(null=True,blank=True)
+    gender = models.IntegerField(
+        choices = gender,
+        verbose_name='Gender',
+        null=True,blank=True
+    )
+    address = models.CharField(max_length=150,null=True,blank=True)
+    district = models.CharField(
+        max_length = 15,
+        choices = districts,
+        verbose_name='Districts',
+        null=True,blank=True
+    )
+    phone = models.CharField(max_length=11,null=True,blank=True)
+    notes = models.TextField(max_length=500,null=True,blank=True)
+    camped_at = models.ForeignKey(RescueCamp,models.CASCADE,blank=False,null=False)
+
+    def __str__(self):
+        return self.name
+
+

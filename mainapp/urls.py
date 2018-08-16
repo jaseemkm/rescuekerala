@@ -1,5 +1,5 @@
 from django.urls import path
-
+from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
@@ -19,5 +19,7 @@ urlpatterns = [
     path('data/' , views.mapdata , name="mapdata"),
     path('map/' , views.mapview , name="mapview"),
     path('dmodash/' , views.dmodash , name="DMODash"),
-    path('dmoinfo/' , views.dmoinfo , name="DMOInfo" )
+    path('dmoinfo/' , views.dmoinfo , name="DMOInfo" ),
+    path('add_person/', views.AddPerson.as_view(), name='add_person'),
+    path('login/', auth_views.LoginView.as_view(template_name='mainapp/login.html'),name='user_login')
 ]
